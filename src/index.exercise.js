@@ -9,48 +9,57 @@ import {Dialog} from '@reach/dialog'
 import VisuallyHidden from '@reach/visually-hidden'
 import '@reach/dialog/styles.css'
 
+const LoginModal = ({openModal, onClose}) => {
+  const showDialog = openModal === 'login'
+  return (
+    <div>
+      <Dialog isOpen={showDialog} aria-label="Login">
+        <button className="close-button" onClick={() => onClose()}>
+          <VisuallyHidden>Close</VisuallyHidden>
+          <span aria-hidden>×</span>
+        </button>
+        <p>Login Modal</p>
+      </Dialog>
+    </div>
+  )
+}
+
+const RegistrationModal = ({openModal, onClose}) => {
+  const showDialog = openModal === 'register'
+
+  return (
+    <div>
+      <Dialog isOpen={showDialog} aria-label="Register">
+        <button className="close-button" onClick={() => onClose()}>
+          <VisuallyHidden>Close</VisuallyHidden>
+          <span aria-hidden>×</span>
+        </button>
+        <p>Register Modal</p>
+      </Dialog>
+    </div>
+  )
+}
+
 // 🐨 create an App component here and render the logo, the title ("Bookshelf"), a login button, and a register button.
 const App = () => {
   const [openModal, setOpenModal] = useState('none')
+  const onClose = () => {
+    setOpenModal('none')
+  }
 
   return (
     <div>
       <div>Bookshelf</div>
       <Logo />
       <div>
-        <>
-          <Dialog isOpen={openModal === 'login'} aria-label={'login'}>
-            <button
-              className="close-button"
-              onClick={() => setOpenModal('none')}
-            >
-              <VisuallyHidden>Close</VisuallyHidden>
-              <span aria-hidden>×</span>
-            </button>
-            <p>Hello there. I am a login dialog</p>
-          </Dialog>
-        </>
-        <>
-          <Dialog isOpen={openModal === 'register'} aria-label={'register'}>
-            <button
-              className="close-button"
-              onClick={() => setOpenModal('none')}
-            >
-              <VisuallyHidden>Close</VisuallyHidden>
-              <span aria-hidden>×</span>
-            </button>
-            <p>Hello there. I am a register dialog</p>
-          </Dialog>
-        </>
+        <LoginModal openModal={openModal} onClose={onClose} />
+        <RegistrationModal openModal={openModal} onClose={onClose} />
         <button onClick={() => setOpenModal('login')}>Login</button>
         <button onClick={() => setOpenModal('register')}>Register</button>
       </div>
     </div>
   )
 }
-// 🐨 for fun, you can add event handlers for both buttons to alert that the button was clicked
 
-// 🐨 use ReactDOM to render the <App /> to the root element
-// 💰 find the root element with: document.getElementById('root')
 const root = document.getElementById('root')
 ReactDOM.render(<App />, root)
