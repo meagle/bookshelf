@@ -1,5 +1,5 @@
 // 🐨 you'll need to import React and ReactDOM up here
-import React, {useState} from 'react'
+import React, {useState, useRef} from 'react'
 
 import ReactDOM from 'react-dom'
 
@@ -9,8 +9,57 @@ import {Dialog} from '@reach/dialog'
 import VisuallyHidden from '@reach/visually-hidden'
 import '@reach/dialog/styles.css'
 
+const LoginForm = ({onSubmit}) => {
+  const loginFormRef = useRef(null)
+
+  /* 
+  // This was my alternate but I think I like KCD's solution too (below)
+  const handleSubmit = e => {
+    e.preventDefault()
+    const data = new FormData(loginFormRef.current)
+    let object = {}
+    data.forEach((value, key) => (object[key] = value))
+    let json = JSON.stringify(object)
+    onSubmit(json)
+  }
+  */
+
+  function handleSubmit(event) {
+    event.preventDefault()
+    const {username, password} = event.target.elements
+    console.log(event.target.elements)
+
+    onSubmit({
+      username: username.value,
+      password: password.value,
+    })
+  }
+
+  return (
+    <form ref={loginFormRef} onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="username">User Name:</label>
+        <input type="text" name="username" id="username" />
+      </div>
+      <div>
+        <label htmlFor="password">Password:</label>
+        <input type="password" name="password" id="password" />
+      </div>
+      <div>
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+  )
+}
+
 const LoginModal = ({openModal, onClose}) => {
+  function handleSubmit(formData) {
+    console.log('login', formData)
+    onClose()
+  }
+
   const showDialog = openModal === 'login'
+
   return (
     <div>
       <Dialog isOpen={showDialog} aria-label="Login">
@@ -18,7 +67,8 @@ const LoginModal = ({openModal, onClose}) => {
           <VisuallyHidden>Close</VisuallyHidden>
           <span aria-hidden>×</span>
         </button>
-        <p>Login Modal</p>
+
+        <LoginForm onSubmit={handleSubmit} buttonText="Login" />
       </Dialog>
     </div>
   )
