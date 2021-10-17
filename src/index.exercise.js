@@ -99,8 +99,8 @@ const App = () => {
 
   return (
     <div>
-      <div>Bookshelf</div>
-      <Logo />
+      <Logo width={80} height={80} />
+      <h1>Bookshelf</h1>
       <div>
         <LoginModal openModal={openModal} onClose={onClose} />
         <RegistrationModal openModal={openModal} onClose={onClose} />
