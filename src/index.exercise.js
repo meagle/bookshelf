@@ -1,23 +1,53 @@
 // 🐨 you'll need to import React and ReactDOM up here
-import * as React from 'react'
+import React, {useState} from 'react'
+
 import ReactDOM from 'react-dom'
 
 // 🐨 you'll also need to import the Logo component from './components/logo'
 import {Logo} from './components/logo'
-
-const loginClicked = () => alert('Login button clicked')
+import {Dialog} from '@reach/dialog'
+import VisuallyHidden from '@reach/visually-hidden'
+import '@reach/dialog/styles.css'
 
 // 🐨 create an App component here and render the logo, the title ("Bookshelf"), a login button, and a register button.
-const App = () => (
-  <div>
-    <div>Bookshelf</div>
-    <Logo />
+const App = () => {
+  const [openModal, setOpenModal] = useState('none')
+
+  return (
     <div>
-      <button onClick={loginClicked}>Login</button>
-      <button>Register</button>
+      <div>Bookshelf</div>
+      <Logo />
+      <div>
+        <>
+          <Dialog isOpen={openModal === 'login'} aria-label={'login'}>
+            <button
+              className="close-button"
+              onClick={() => setOpenModal('none')}
+            >
+              <VisuallyHidden>Close</VisuallyHidden>
+              <span aria-hidden>×</span>
+            </button>
+            <p>Hello there. I am a login dialog</p>
+          </Dialog>
+        </>
+        <>
+          <Dialog isOpen={openModal === 'register'} aria-label={'register'}>
+            <button
+              className="close-button"
+              onClick={() => setOpenModal('none')}
+            >
+              <VisuallyHidden>Close</VisuallyHidden>
+              <span aria-hidden>×</span>
+            </button>
+            <p>Hello there. I am a register dialog</p>
+          </Dialog>
+        </>
+        <button onClick={() => setOpenModal('login')}>Login</button>
+        <button onClick={() => setOpenModal('register')}>Register</button>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 // 🐨 for fun, you can add event handlers for both buttons to alert that the button was clicked
 
 // 🐨 use ReactDOM to render the <App /> to the root element
