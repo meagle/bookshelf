@@ -11,11 +11,13 @@ async function getToken() {
 }
 
 function handleUserResponse({user}) {
+  console.log('handleUserResponse...')
   window.localStorage.setItem(localStorageKey, user.token)
   return user
 }
 
 function login({username, password}) {
+  console.log('login...')
   return client('login', {username, password}).then(handleUserResponse)
 }
 
@@ -38,14 +40,20 @@ async function client(endpoint, data) {
     headers: {'Content-Type': 'application/json'},
   }
 
-  return window.fetch(`${authURL}/${endpoint}`, config).then(async response => {
-    const data = await response.json()
-    if (response.ok) {
-      return data
-    } else {
-      return Promise.reject(data)
-    }
-  })
+  return window
+    .fetch(`${authURL}/${endpoint}`, config)
+    .then(async response => {
+      const data = await response.json()
+      if (response.ok) {
+        return data
+      } else {
+        return Promise.reject(data)
+      }
+    })
+    .then(user => {
+      console.log('user: ', user)
+      return user
+    })
 }
 
 export {getToken, login, register, logout, localStorageKey}
