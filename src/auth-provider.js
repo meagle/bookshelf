@@ -11,7 +11,7 @@ async function getToken() {
 }
 
 function handleUserResponse({user}) {
-  console.log('handleUserResponse...')
+  console.log('handleUserResponse...', user)
   window.localStorage.setItem(localStorageKey, user.token)
   return user
 }
@@ -40,20 +40,15 @@ async function client(endpoint, data) {
     headers: {'Content-Type': 'application/json'},
   }
 
-  return window
-    .fetch(`${authURL}/${endpoint}`, config)
-    .then(async response => {
-      const data = await response.json()
-      if (response.ok) {
-        return data
-      } else {
-        return Promise.reject(data)
-      }
-    })
-    .then(user => {
-      console.log('user: ', user)
-      return user
-    })
+  return window.fetch(`${authURL}/${endpoint}`, config).then(async response => {
+    const data = await response.json()
+    if (response.ok) {
+      console.log('fetch', data)
+      return data
+    } else {
+      return Promise.reject(data)
+    }
+  })
 }
 
 export {getToken, login, register, logout, localStorageKey}
