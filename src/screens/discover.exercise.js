@@ -5,7 +5,8 @@ import * as React from 'react'
 import Tooltip from '@reach/tooltip'
 import {FaSearch, FaTimes} from 'react-icons/fa'
 // 🐨 you'll need useQuery from 'react-query'
-import {useAsync} from 'utils/hooks'
+import {useQuery} from 'react-query'
+// import {useAsync} from 'utils/hooks'
 import {client} from 'utils/api-client'
 import * as colors from 'styles/colors'
 import {BookRow} from 'components/book-row'
@@ -29,24 +30,40 @@ const loadingBooks = Array.from({length: 10}, (v, index) => ({
 function DiscoverBooksScreen({user}) {
   const [query, setQuery] = React.useState('')
   const [queried, setQueried] = React.useState(false)
+
   // 🐨 replace this useAsync call with a useQuery call to handle the book search
   // the queryKey should be ['bookSearch', {query}]
   // the queryFn should be the same thing we have in the run function below
   // you'll get back the same stuff you get from useAsync, (except the run function)
-  const {data, error, run, isLoading, isError, isSuccess} = useAsync()
+  // const {data, error, run, isLoading, isError, isSuccess} = useAsync()
 
-  const books = data ?? loadingBooks
+  const {
+    data: books = loadingBooks,
+    error,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useQuery(['bookSearch', {query}], () =>
+    client(`books?query=${encodeURIComponent(query)}`, {
+      token: user.token,
+    }).then(data => {
+      console.log('data.books', data.books)
+      return data.books
+    }),
+  )
 
-  React.useEffect(() => {
-    if (!queried) {
-      return
-    }
-    run(
-      client(`books?query=${encodeURIComponent(query)}`, {
-        token: user.token,
-      }).then(data => data.books),
-    )
-  }, [query, queried, run, user.token])
+  // const books = data ?? loadingBooks
+
+  // React.useEffect(() => {
+  //   if (!queried) {
+  //     return
+  //   }
+  // run(
+  //   client(`books?query=${encodeURIComponent(query)}`, {
+  //     token: user.token,
+  //   }).then(data => data.books),
+  // )
+  // }, [query, queried, run, user.token])
 
   function handleSearchSubmit(event) {
     event.preventDefault()

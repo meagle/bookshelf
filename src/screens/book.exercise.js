@@ -7,8 +7,8 @@ import {FaRegCalendarAlt} from 'react-icons/fa'
 import Tooltip from '@reach/tooltip'
 import {useParams} from 'react-router-dom'
 // 🐨 you'll need these:
-// import {useQuery, useMutation, queryCache} from 'react-query'
-import {useAsync} from 'utils/hooks'
+import {useQuery, useMutation, queryCache} from 'react-query'
+// import {useAsync} from 'utils/hooks'
 import {client} from 'utils/api-client'
 import {formatDate} from 'utils/misc'
 import * as mq from 'styles/media-queries'
@@ -30,21 +30,42 @@ const loadingBook = {
 function BookScreen({user}) {
   const {bookId} = useParams()
   // 💣 remove the useAsync call here
-  const {data, run} = useAsync()
+  // const {data, run} = useAsync()
 
   // 🐨 call useQuery here
   // queryKey should be ['book', {bookId}]
   // queryFn should be what's currently passed in the run function below
+  const fetchBook = () => {
+    return client(`books/${bookId}`, {
+      token: user.token,
+    })
+  }
 
+  const {data} = useQuery('book', fetchBook)
   // 💣 remove the useEffect here (react-query will handle that now)
-  React.useEffect(() => {
-    run(client(`books/${bookId}`, {token: user.token}))
-  }, [run, bookId, user.token])
+  // React.useEffect(() => {
+  //   run(client(`books/${bookId}`, {token: user.token}))
+  // }, [run, bookId, user.token])
 
   // 🐨 call useQuery to get the list item from the list-items endpoint
   // queryKey should be 'list-items'
   // queryFn should call the 'list-items' endpoint with the user's token
-  const listItem = null
+  // const listItem = null
+  const fetchListItems = () =>
+    client(`list-items`, {
+      token: user.token,
+    }).then(data => data.listItems)
+
+  // 🐨 call useQuery here to get the listItem (if it exists)
+  // queryKey should be 'list-items'
+  // queryFn should call the list-items endpoint
+  const {data: listItems} = useQuery('list-items', fetchListItems)
+
+  // 🐨 search through the listItems you got from react-query and find the
+  // one with the right bookId.
+  // const listItem = null
+  const listItem = listItems?.find(li => li.bookId === bookId) ?? null
+
   // 🦉 NOTE: the backend doesn't support getting a single list-item by it's ID
   // and instead expects us to cache all the list items and look them up in our
   // cache. This works out because we're using react-query for caching!
@@ -140,10 +161,24 @@ function NotesTextarea({listItem, user}) {
   // the use the `onSettled` config option to queryCache.invalidateQueries('list-items')
   // 💣 DELETE THIS ESLINT IGNORE!! Don't ignore the exhaustive deps rule please
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const mutate = () => {}
-  const debouncedMutate = React.useMemo(() => debounceFn(mutate, {wait: 300}), [
-    mutate,
-  ])
+  // const mutate = () => {}
+  const invalidateQueries = () => queryCache.invalidateQueries('list-items')
+
+  const updateItem = listItem =>
+    client(`list-items/${encodeURIComponent(listItem.id)}`, {
+      token: user.token,
+      method: 'PUT',
+      data: listItem,
+    })
+
+  const [mutate] = useMutation(updateItem, {
+    onSettled: invalidateQueries,
+  })
+
+  const debouncedMutate = React.useMemo(
+    () => debounceFn(mutate, {wait: 300}),
+    [mutate],
+  )
 
   function handleNotesChange(e) {
     debouncedMutate({id: listItem.id, notes: e.target.value})
