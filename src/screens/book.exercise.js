@@ -7,6 +7,7 @@ import {FaRegCalendarAlt} from 'react-icons/fa'
 import Tooltip from '@reach/tooltip'
 import {useParams} from 'react-router-dom'
 import {useBook} from 'utils/books'
+import {ErrorMessage} from 'components/lib'
 import {useListItem, useUpdateListItem} from 'utils/list-items'
 import {formatDate} from 'utils/misc'
 import * as mq from 'styles/media-queries'
@@ -102,10 +103,11 @@ function ListItemTimeframe({listItem}) {
 }
 
 function NotesTextarea({listItem, user}) {
-  const [mutate] = useUpdateListItem(user)
-  const debouncedMutate = React.useMemo(() => debounceFn(mutate, {wait: 300}), [
-    mutate,
-  ])
+  const [mutate, {isError, error}] = useUpdateListItem(user)
+  const debouncedMutate = React.useMemo(
+    () => debounceFn(mutate, {wait: 300}),
+    [mutate],
+  )
 
   function handleNotesChange(e) {
     debouncedMutate({id: listItem.id, notes: e.target.value})
@@ -125,6 +127,13 @@ function NotesTextarea({listItem, user}) {
           }}
         >
           Notes
+          {isError ? (
+            <ErrorMessage
+              error={error}
+              variant="inline"
+              css={{marginLeft: 6, fontSize: '0.7em'}}
+            />
+          ) : null}
         </label>
       </div>
       <Textarea
