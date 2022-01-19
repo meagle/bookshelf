@@ -3,16 +3,16 @@ import {jsx} from '@emotion/core'
 
 import * as React from 'react'
 import debounceFn from 'debounce-fn'
+import {Spinner} from '../components/lib'
 import {FaRegCalendarAlt} from 'react-icons/fa'
 import Tooltip from '@reach/tooltip'
 import {useParams} from 'react-router-dom'
 import {useBook} from 'utils/books'
-import {ErrorMessage} from 'components/lib'
 import {useListItem, useUpdateListItem} from 'utils/list-items'
 import {formatDate} from 'utils/misc'
 import * as mq from 'styles/media-queries'
 import * as colors from 'styles/colors'
-import {Textarea} from 'components/lib'
+import {Textarea, ErrorMessage} from 'components/lib'
 import {Rating} from 'components/rating'
 import {StatusButtons} from 'components/status-buttons'
 
@@ -103,7 +103,7 @@ function ListItemTimeframe({listItem}) {
 }
 
 function NotesTextarea({listItem, user}) {
-  const [mutate, {isError, error}] = useUpdateListItem(user)
+  const [mutate, {error, isError, isLoading}] = useUpdateListItem(user)
   const debouncedMutate = React.useMemo(
     () => debounceFn(mutate, {wait: 300}),
     [mutate],
@@ -127,14 +127,16 @@ function NotesTextarea({listItem, user}) {
           }}
         >
           Notes
-          {isError ? (
-            <ErrorMessage
-              error={error}
-              variant="inline"
-              css={{marginLeft: 6, fontSize: '0.7em'}}
-            />
-          ) : null}
         </label>
+        {isLoading ? (
+          <Spinner />
+        ) : isError ? (
+          <ErrorMessage
+            error={error}
+            variant="inline"
+            css={{marginLeft: 6, fontSize: '0.7em'}}
+          />
+        ) : null}
       </div>
       <Textarea
         id="notes"
