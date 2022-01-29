@@ -1,7 +1,11 @@
 import * as React from 'react'
 
-// 🐨 create and export a React context variable for the AuthContext
-// 💰 using React.createContext
 const AuthContext = React.createContext()
 
-export {AuthContext}
+const useAuth = () => {
+  const authContext = React.useContext(AuthContext)
+  if (!authContext) throw new Error('You must supply an AuthContext')
+  return authContext
+}
+
+export {AuthContext, useAuth}

@@ -9,7 +9,6 @@ import {
   FaBook,
   FaTimesCircle,
 } from 'react-icons/fa'
-
 import Tooltip from '@reach/tooltip'
 import {
   useListItem,
@@ -52,12 +51,10 @@ function TooltipButton({label, highlight, onClick, icon, ...rest}) {
   )
 }
 
-// 💣 remove user from the props
 function StatusButtons({book}) {
-  // 💣 remove the user from all these function calls
   const listItem = useListItem(book.id)
-  const [remove] = useRemoveListItem({throwOnError: true})
   const [update] = useUpdateListItem({throwOnError: true})
+  const [remove] = useRemoveListItem({throwOnError: true})
   const [create] = useCreateListItem({throwOnError: true})
 
   return (
