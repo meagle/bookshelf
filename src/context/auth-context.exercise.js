@@ -72,4 +72,21 @@ function useAuth() {
   return context
 }
 
-export {AuthProvider, useAuth}
+function useClient() {
+  const {user} = useAuth()
+  const token = user.token
+
+  // this is more efficient with destructuring
+  // const {
+  //   user: {token},
+  // } = useAuth()
+
+  return React.useCallback(
+    function authenticatedClient(endpoint, config) {
+      return client(endpoint, {...config, token})
+    },
+    [token],
+  )
+}
+
+export {AuthProvider, useAuth, useClient}

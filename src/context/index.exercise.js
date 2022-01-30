@@ -1,5 +1,4 @@
 import * as React from 'react'
-
 import {BrowserRouter as Router} from 'react-router-dom'
 import {ReactQueryConfigProvider} from 'react-query'
 import {AuthProvider} from './auth-context'
@@ -15,7 +14,6 @@ const queryConfig = {
     },
   },
 }
-
 function AppProviders({children}) {
   return (
     <ReactQueryConfigProvider config={queryConfig}>
