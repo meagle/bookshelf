@@ -2,7 +2,7 @@
 import {jsx} from '@emotion/core'
 
 import * as React from 'react'
-import {queryCache} from 'react-query'
+import {useQueryClient} from 'react-query'
 import * as auth from 'auth-provider'
 import {client} from 'utils/api-client'
 import {useAsync} from 'utils/hooks'
@@ -40,13 +40,15 @@ function AuthProvider(props) {
     run(getUser())
   }, [run])
 
+  const queryClient = useQueryClient()
+
   const login = form => auth.login(form).then(user => setData(user))
   const register = form => auth.register(form).then(user => setData(user))
-  const logout = () => {
+  const logout = React.useCallback(() => {
     auth.logout()
-    queryCache.clear()
+    queryClient.clear()
     setData(null)
-  }
+  }, [queryClient, setData])
 
   if (isLoading || isIdle) {
     return <FullPageSpinner />

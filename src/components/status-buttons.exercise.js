@@ -53,9 +53,10 @@ function TooltipButton({label, highlight, onClick, icon, ...rest}) {
 
 function StatusButtons({book}) {
   const listItem = useListItem(book.id)
-  const [update] = useUpdateListItem({throwOnError: true})
-  const [remove] = useRemoveListItem({throwOnError: true})
-  const [create] = useCreateListItem({throwOnError: true})
+  // We need this one to return a Promis so use mutateAsync
+  const {mutateAsync: update} = useUpdateListItem()
+  const {mutateAsync: remove} = useRemoveListItem()
+  const {mutateAsync: create} = useCreateListItem()
 
   return (
     <React.Fragment>
